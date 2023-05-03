@@ -1,0 +1,452 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/ja.min.js"></script>
+
+  <style>
+    .sourcecode{
+      font-family: consolas,'Courier New', Courier, monospace;
+      font-size: 0.75rem;
+      height: 6rem;
+    }
+  </style>
+</head>
+<body>
+<div class="container-fluid w-75 bordered pt-5 pb-5">
+  <a href="https://hoproductdev.esa.io/posts/1322">news.*.yml のテンプレ</a>
+  
+  <div class="row mt-4">
+    <div class="col-sm-3"><span class="fw-bold">ニュースの種類: </span></div>
+    <div class="col-sm-9">
+      <select class="form-select" id="content_type">
+        <option selected disabled value="-2">---</option>
+        <option value="0">アーカイブ公開</option>
+        <option value="1">ライブ視聴予約開始</option>
+        <option value="2">ライブ以外の視聴予約開始</option>
+        <option value="3">学会等、参加受付開始</option>
+        <option value="4">ランチョン配信あるよ！</option>
+        <option value="5">シリーズにコンテンツ追加</option>
+        <option value="6">その他、公開しました系</option>
+        <option value="7">延期しました</option>
+        <option value="-1">それ以外</option>
+      </select>
+    </div>
+  </div>
+  <div class="row mt-4 d-none" id="luncheon_period">
+    <div class="col-sm-3"><span class="fw-bold">ランチョン期間: </span></div>
+    <div class="col-sm-9 row">
+      <div class="col-sm-6">
+        from: <input type="date" id="luncheon_from">
+      </div>
+      <div class="col-sm-6">
+        to: <input type="date" id="luncheon_to">
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4 title_whole">
+    <div class="col-sm-3"><span class="fw-bold">タイトル 日本語: </span></div>
+    <div class="col-sm-9"><input type="text" class="w-100" id="title_ja"></div>
+  </div>
+  <div class="row mt-4 title_whole">
+    <div class="col-sm-3"><span class="fw-bold">タイトル 英語: </span></div>
+    <div class="col-sm-9">
+      <input type="text" class="w-100" id="title_en">
+      <div class="form-text">英語版タイトルがない場合は空にしておいてください</div>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-sm-3"><span class="fw-bold">専門科: </span></div>
+    <div class="col-sm-9">
+      <div class="depts" id="depts_0">
+        <div class="row">
+          <div class="col-sm-9">
+            <select class="form-select dept" id="dept_0">
+              <option selected disabled value="-2">---</option>
+            </select>
+          </div>
+          <div class="col-sm-3">
+            <button class="btn btn-primary btn_add_dept float-end" id="btn_add_dept_0" disabled>追加</button>
+          </div>
+        </div>
+        <div class="row mt-1 d-none" id="dept_lang_0">
+          <div class="col-sm-6 row">
+            <div class="col-md-3 text-end"><span class="fw-bold">ja:</span></div>
+            <div class="col-md-9"><input type="text" class="w-100" id="dept_ja_0"></div>
+          </div>
+          <div class="col-sm-6 row">
+            <div class="col-md-3 text-end"><span class="fw-bold">en:</span></div>
+            <div class="col-md-9"><input type="text" class="w-100" id="dept_en_0"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4" id="uuid_href_whole">
+    <div class="col-sm-3"><span class="fw-bold" id="uuid_href_title">UUID: </span></div>
+    <div class="col-sm-9">
+      <input type="text" class="w-100" id="uuid_href">
+      <div class="form-text" id="uuid_href_text">UUIDのみを記入してください</div>
+      <div class="w-100 text-end pe-5" id="is_playlist">
+        <label for="cbx_playlist">プレイリストの有無</label>
+        <input type="checkbox" id="cbx_playlist">
+      </div>
+    </div>
+  </div>
+  <div class="row mt-4 d-none" id="playlist">
+    <div class="col-sm-3"><span class="fw-bold">プレイリスト UUID: </span></div>
+    <div class="col-sm-9">
+      <input type="text" class="w-100" id="playlist_uuid">
+      <div class="form-text">プレイリストがある場合はここにプレイリストのUUIDを入れてください</div>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-sm-3"><span class="fw-bold">公開日時: </span></div>
+    <div class="col-sm-9"><input type="date" class="me-3" id="pub_date"><input type="time" value="18:00" id="pub_time"></div>
+  </div>
+  <div class="mt-5 container-fluid">
+    <button class="btn btn-primary float-end" id="btn_go">Go!</button>
+  </div>
+  <div class="dst mt-5">
+    <h2>・出力</h2>
+    <div class="container-fluid">
+      <span class="fw-bold">日本語:</span><br>
+      <textarea id="dst_ja" class="w-100 sourcecode"></textarea>
+      Link: <span id="dst_link_ja"></span>
+    </div>
+    <div class="container-fluid mt-4">
+      <span class="fw-bold">英語:</span><br>
+      <textarea id="dst_en" class="w-100 sourcecode"></textarea>
+      Link: <span id="dst_link_en"></span>
+    </div>
+  </div>
+</div>
+</body>
+<script>
+
+//-------------------------------------------------------------------------------------------
+// global 変数
+//-------------------------------------------------------------------------------------------
+// 専門科リスト
+const list_department = [
+  { ja:"循環器内科", en:"Cardiology" },
+  { ja:"脳神経外科", en:"Neurosurgery" },
+  { ja:"脳神経内科", en:"Neurology" },
+  { ja:"整形外科",   en:"Orthopedics" },
+  { ja:"消化器科",   en:"Gastroenterology"},
+  { ja:"耳鼻咽喉科", en:"Otolaryngology"},
+  { ja:"放射線科",   en:"Radiology"},
+  { ja:"形成外科",   en:"Plastic Surgery"},
+  { ja:"その他",     en:"Others"}
+];
+
+const reflesh_icon=`<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0z" fill="none"/><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>`;
+
+//-------------------------------------------------------------------------------------------
+// window on load
+//-------------------------------------------------------------------------------------------
+$(function(){
+  // ニュースの種類を変更したときの挙動
+  $("#content_type").on("change", ()=>{
+    switch( parseInt($("#content_type option:selected").val()) ){
+      case 0:   // アーカイブ公開
+      case 1:   // ライブ視聴予約開始
+      case 5:   // シリーズにコンテンツ追加
+      case -1:  // "それ以外"
+        $("#uuid_href_title").text("UUID:");
+        $("#uuid_href_text").text("UUIDのみを記入してください");
+        $("#is_playlist").removeClass("d-none");
+        $("#luncheon_period").addClass("d-none");
+        $(".title_whole").removeClass("d-none");
+        $("#uuid_href_whole").removeClass("d-none");
+        break;
+      case 4:   // ランチョン
+        $("#luncheon_period").removeClass("d-none");
+        $(".title_whole").addClass("d-none");
+        $("#uuid_href_whole").addClass("d-none");
+        break;
+      default:  // 上記以外
+        $("#uuid_href_title").text("href=:");
+        $("#uuid_href_text").text("href=\"\" の中身を記入してください");
+        $("#cbx_playlist").prop("checked", false);
+        $("#is_playlist").addClass("d-none");
+        $("#luncheon_period").addClass("d-none");
+        $(".title_whole").removeClass("d-none");
+        $("#uuid_href_whole").removeClass("d-none");
+        break;
+    }
+    isPlaylist();
+  });
+  
+  // 専門科
+  createDptOptions(0);
+  $("#dept_0").on("change", ()=>{
+    $("#btn_add_dept_0").attr("disabled",false);
+  });
+  $("#btn_add_dept_0").on("click", ()=>{
+    addDepartments();
+  });
+
+  // プレイリストの有無
+  $("#cbx_playlist").on("change", ()=>{
+    isPlaylist();
+  });
+
+  // news 生成
+  $("#btn_go").on("click", function(){
+    buildNews();
+  });
+
+  // 日付のデフォルト値を設定（今日）
+  $("#pub_date").val( moment().format("YYYY-MM-DD") );
+  $("#luncheon_from").val( moment().format("YYYY-MM-DD") );
+  $("#luncheon_to").val( moment().format("YYYY-MM-DD") );
+
+  // $("#btn_dst_link_reflesh_ja").html(reflesh_icon);
+  // $("#btn_dst_link_reflesh_en").html(reflesh_icon);
+});
+
+//-------------------------------------------------------------------------------------------
+// プレイリストの UUID 入力、表示/非表示
+//-------------------------------------------------------------------------------------------
+function isPlaylist(){
+  if( $("#cbx_playlist").prop("checked") ){
+    $("#playlist").removeClass("d-none");
+  }else{
+    $("#playlist").addClass("d-none");
+  }
+}
+
+//-------------------------------------------------------------------------------------------
+// 専門科が追加されたとき
+//-------------------------------------------------------------------------------------------
+function addDepartments(){
+  const num = parseInt($(".depts").last().attr("id").split("_").slice(-1)[0]) +1;
+  const div=`
+
+  <div class="depts mt-2" id="depts_${num}">
+      <div class="row">
+        <div class="col-sm-9">
+          <select class="form-select dept" id="dept_${num}">
+            <option selected disabled value="-2">---</option>
+          </select>
+        </div>
+        <div class="col-sm-3">
+          <button class="btn btn-primary btn_del_dept float-end" id="btn_del_dept_${num}">削除</button>
+        </div>
+      </div>
+      <div class="row mt-1 d-none" id="dept_lang_${num}">
+        <div class="col-sm-6 row row-lang">
+          <div class="col-md-3 text-end"><span class="fw-bold">ja:</span></div>
+          <div class="col-md-9"><input type="text" class="w-100" id="dept_ja_${num}"></div>
+        </div>
+        <div class="col-sm-6 row row-lang">
+          <div class="col-md-3 text-end"><span class="fw-bold">en:</span></div>
+          <div class="col-md-9"><input type="text" class="w-100" id="dept_en_${num}"></div>
+        </div>
+      </div>
+    </div>
+
+  `;
+  
+  $(".depts").last().after(div);
+  createDptOptions(num);
+  $("#btn_del_dept_"+num).on("click", ()=>{
+    $("#depts_"+num).remove();
+  });
+}
+
+//-------------------------------------------------------------------------------------------
+// 専門科 <select> の中身
+//-------------------------------------------------------------------------------------------
+function createDptOptions(num){
+  let options="";
+  $.each(list_department, (i,item) => {
+    const option=`
+      <option value="${i}">${item.ja} / ${item.en}</option>
+    `;
+    options += option;
+  });
+  options += `<option value="-1">それ以外</option>`;
+  $("#dept_"+num).append(options);
+  $("#dept_"+num).on("change",()=>{
+    toggleOtherDeptInput(num);
+  });
+}
+
+//-------------------------------------------------------------------------------------------
+// "それ以外"の専門科のとき、任意入力を表示
+//-------------------------------------------------------------------------------------------
+function toggleOtherDeptInput(num){
+  if( $("#dept_"+num+" option:selected").val()=="-1" ){
+    $("#dept_lang_"+num).removeClass("d-none");
+  }else{
+    $("#dept_lang_"+num).addClass("d-none");
+  }
+}
+
+//-------------------------------------------------------------------------------------------
+// バリデーション・・・は今のところ無し
+//-------------------------------------------------------------------------------------------
+function validation(){}
+
+//-------------------------------------------------------------------------------------------
+// ニュースの生成
+//-------------------------------------------------------------------------------------------
+function buildNews(){
+  let title_en,title_ja, dept_en="",dept_ja="", category_en, category_ja, url;
+  let news_en="", news_ja="";
+  
+  // タイトル
+  title_en = $("#title_en").val().trim();
+  title_ja = $("#title_ja").val().trim();
+  if(title_en==""){
+    title_en=title_ja;
+  }
+  
+  // 専門科
+  let arr_tmp=[], eureca=false;  //重複チェック用
+  $.each($(".dept"), function(i,elm){
+    let dept_val = parseInt($(elm).val());
+    let num = $(elm).attr("id").split("_").slice(-1)[0];
+    //重複チェック
+    $.each(arr_tmp, function(j,v){
+      if(v>0 && v==dept_val) eureca=true;
+    });
+    arr_tmp.push(dept_val);
+
+    if(i>0 && parseInt(dept_val)>-2){
+      dept_en += ", ";
+      dept_ja += "・";
+    }
+    if(dept_val===null || parseInt(dept_val)<0){
+      if($("#dept_en_"+num).val().trim()!="") dept_en += $("#dept_en_"+num).val().trim();
+      if($("#dept_ja_"+num).val().trim()!="") dept_ja += $("#dept_ja_"+num).val().trim();
+    }else{
+      dept_en += list_department[dept_val].en;
+      dept_ja += list_department[dept_val].ja;
+    }
+  });
+  if(eureca) alert("同じ専門科が選択されてますけど・・・\n一応そのまま news は作っときました");
+
+  // category
+  let cat_num = parseInt( $("#content_type option:selected").val() );
+
+  // UUID とか
+  let uuid_href = $("#uuid_href").val().trim();
+  let playlist = "";
+  if( $("#cbx_playlist").prop("checked") ) playlist = $("#playlist_uuid").val().trim();
+  if(playlist!="") playlist = "&playlist=" + playlist;
+
+  switch(cat_num){
+    case 0:  // アーカイブ公開
+      url = "/watch?v="+uuid_href+playlist;
+      news_en = `【VIDEO / ${dept_en}】The archive video of "<a class="news-list__link" href="${url}">${title_en}</a>" is now available.`;
+      news_ja = `【VIDEO / ${dept_ja}】「<a class="news-list__link" href="${url}">${title_ja}</a>」のLIVEアーカイブVIDEOを公開しました。`;
+      break;
+
+    case 1:  // ライブ視聴予約開始
+      url = "/live?v="+uuid_href;//+playlist;
+      news_en = `【LIVE / ${dept_en}】The reservation for "<a class="news-list__link" href="${url}">${title_en}</a>" is now available.`;
+      news_ja = `【LIVE / ${dept_ja}】「<a class="news-list__link" href="${url}">${title_ja}</a>」の視聴予約を開始しました。`;
+      break;
+
+    case 2:  // ライブ以外の視聴予約開始
+      url = uuid_href;
+      news_en = `【${dept_en}】The reservation for "<a class="news-list__link" href="${url}">${title_en}</a>" is now available.`;
+      news_ja = `【${dept_ja}】「<a class="news-list__link" href="${url}">${title_ja}</a>」の視聴予約を開始しました。`;
+      break;
+
+    case 3:  // 学会等、参加受付開始
+      url = uuid_href;
+      news_en = `【LIVE / ${dept_en}】The application for "<a class="news-list__link" href="${url}">${title_en}</a>" is now available.`;
+      news_ja = `【LIVE / ${dept_ja}】「<a class="news-list__link" href="${url}">${title_ja}</a>」の参加受付を開始しました`;
+      break;
+
+    case 4:  // ランチョン配信あるよ！
+      let luncheon_prd_ja="";
+      moment.locale("ja");
+      if( $("#luncheon_from").val()==$("#luncheon_to").val() ){
+        luncheon_prd_ja = moment($("#luncheon_from").val()).format("M/D（ddd）");
+      }else{
+        luncheon_prd_ja = moment($("#luncheon_from").val()).format("M/D（ddd）") +"〜"+ moment($("#luncheon_to").val()).format("M/D（ddd）") + "毎日";
+      }
+
+      moment.locale("en");
+      let luncheon_prd_en="";
+      let to_fmt = "MMM D";
+      if( moment($("#luncheon_from").val()).format("MMM") == moment($("#luncheon_to").val()).format("MMM") ){
+        to_fmt="D";
+      }
+      if( $("#luncheon_from").val()==$("#luncheon_to").val() ){
+        luncheon_prd_en = "on " + moment($("#luncheon_from").val()).format("MMM D");
+      }else{
+        luncheon_prd_en = "every day from " + moment($("#luncheon_from").val()).format("MMM D") +" to "+ moment($("#luncheon_to").val()).format(to_fmt);
+      }
+      
+      url = "/luncheon";
+      title_en = "Luncheon LIVE";
+      title_ja = "ランチョン配信";
+      news_en = `【${dept_en}】There will be a "<a class="news-list__link" href="${url}">${title_en}</a>" from 12:00 noon ${luncheon_prd_en}.`;
+      news_ja = `【${dept_ja}】${luncheon_prd_ja}お昼12:00〜「<a class="news-list__link" href="${url}">${title_ja}</a>」があります。`;
+      break;
+
+    case 5:  // シリーズにコンテンツ追加
+      url = uuid_href+playlist;
+      news_en = `【VIDEO / ${dept_en}】Added contents to "<a class="news-list__link" href="${url}">${title_en}</a>".`;
+      news_ja = `【VIDEO / ${dept_ja}】「<a class="news-list__link" href="${url}">${title_ja}</a>」に各種コンテンツを追加しました。`;
+      break;
+
+    case 6:  // その他、公開しました系
+      url = uuid_href+playlist;
+      news_en = `【VIDEO / ${dept_en}】"<a class="news-list__link" href="${url}">${title_en}</a>" is now available.`;
+      news_ja = `【VIDEO / ${dept_ja}】「<a class="news-list__link" href="${url}">${title_ja}</a>」を公開しました。`;
+      break;
+    
+    case 7:  // 延期しました
+      url = uuid_href;
+      news_en = `【${dept_en}】"<a class="news-list__link" href="${url}">${title_en}</a>" is postponed.`;
+      news_ja = `【${dept_ja}】「<a class="news-list__link" href="${url}">${title_ja}</a>」が延期になりました。`;
+      break;
+
+    default:  // 無選択
+      url = uuid_href+playlist;
+      news_en = `【${dept_en}】"<a class="news-list__link" href="${url}">${title_en}</a>"`;
+      news_ja = `【${dept_ja}】「<a class="news-list__link" href="${url}">${title_ja}</a>」`;
+      break;
+  }
+
+  const pub_datetime = `${$("#pub_date").val()}T${$("#pub_time").val()}:00+09:00: >`;
+  const dst_en = `${pub_datetime}\n  ${news_en}`; 
+  const dst_ja = `${pub_datetime}\n  ${news_ja}`; 
+
+  // ニュース表示
+  $("#dst_en").val(dst_en);
+  $("#dst_ja").val(dst_ja);
+
+  // リンク確認の表示
+  $("#dst_link_en").html(`<a href="https://www.e-casebook.com${url}">${title_en}</a>`);
+  $("#dst_link_ja").html(`<a href="https://www.e-casebook.com${url}">${title_ja}</a>`);
+}
+
+//-------------------------------------------------------------------------------------------
+// 一応 changelog
+//-------------------------------------------------------------------------------------------
+/*
+  2022-09-06
+  ・脳神経内科追加
+  ・ライブ予約開始のときUUIDだけ入れたらいいようにした
+*/
+</script>
+</html>
+build_news.html
+build_news.html を表示しています。
